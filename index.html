@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090d1a">
+<title>Computer Fundamentals | Quick Quiz</title>
+<style>
+:root{--bg:#090d1a;--panel:#111a2d;--panel2:#17233a;--text:#f4f7ff;--muted:#aab6cc;--accent:#67e8f9;--accent2:#8b9cff;--good:#4ade80;--bad:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0%,#1b3151 0,transparent 36%),linear-gradient(145deg,#080c18,#101a2b);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);padding:22px 14px}
+main{width:min(100%,680px);margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 22px}
+.brand{font-size:13px;letter-spacing:2px;color:var(--accent);font-weight:800}
+.pill{border:1px solid #31415e;border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}
+.card{background:rgba(17,26,45,.94);border:1px solid #263653;border-radius:22px;padding:clamp(20px,5vw,34px);box-shadow:0 20px 60px #0005}
+h1{font-size:clamp(29px,7vw,44px);line-height:1.08;margin:12px 0}
+h2{font-size:clamp(22px,5vw,28px);margin:8px 0 12px}
+p{color:var(--muted);line-height:1.6}
+.tag{display:inline-block;color:#08111e;background:var(--accent);font-weight:800;font-size:11px;letter-spacing:1px;padding:6px 10px;border-radius:7px}
+button{font:inherit;cursor:pointer}
+.primary{width:100%;border:0;border-radius:13px;padding:15px 18px;background:linear-gradient(100deg,var(--accent),#9ba7ff);color:#07111e;font-weight:850;font-size:16px;margin-top:18px}
+.primary:active,.option:active{transform:scale(.99)}
+.progress-row{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-bottom:9px}
+.track{height:8px;border-radius:99px;background:#26344c;overflow:hidden;margin-bottom:26px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s}
+.question{font-size:clamp(19px,4.8vw,24px);font-weight:750;line-height:1.35;margin:10px 0 20px}
+.options{display:grid;gap:11px}
+.option{width:100%;text-align:left;padding:14px 15px;border:1px solid #34445f;border-radius:13px;background:var(--panel2);color:var(--text);font-size:15px;line-height:1.4;transition:.15s}
+.option:hover{border-color:var(--accent)}
+.option:disabled{cursor:default;opacity:1}
+.option.correct{border-color:var(--good);background:#123326}
+.option.wrong{border-color:var(--bad);background:#3a1c2a}
+.feedback{margin-top:16px;padding:13px 14px;border-radius:12px;background:#1b2940;color:var(--muted);line-height:1.5;display:none}
+.feedback.show{display:block}
+.feedback strong{color:var(--text)}
+.actions{display:flex;gap:10px;align-items:center}
+.actions .primary{flex:1}
+.small{font-size:12px;color:var(--muted);text-align:center;margin-top:18px}
+.result-score{font-size:clamp(52px,14vw,76px);font-weight:900;letter-spacing:-3px;color:var(--accent);margin:10px 0}
+.result-box{background:#17243a;border:1px solid #30435f;border-radius:15px;padding:15px;margin:18px 0}
+.hidden{display:none!important}
+footer{text-align:center;color:#74839e;font-size:12px;margin:18px 0}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="brand">BYTEWISE / CLASSROOM QUIZ</div><div class="pill">10 QUESTIONS · 5–7 MIN</div></div>
+  <section class="card" id="intro">
+    <span class="tag">COMPUTER FUNDAMENTALS</span>
+    <h1>Test your<br><span style="color:var(--accent)">tech knowledge.</span></h1>
+    <p>Ready for a quick challenge? Answer 10 multiple-choice questions covering the basics of computers, hardware, software, memory, and the internet.</p>
+    <div class="result-box">
+      <div style="display:flex;justify-content:space-between;gap:10px"><strong>10 questions</strong><span style="color:var(--muted)">4 options each</span></div>
+      <p style="margin:7px 0 0;font-size:13px">Choose one answer per question. You’ll get instant feedback and see your final score at the end.</p>
+    </div>
+    <button class="primary" id="start">Start quiz&nbsp; →</button>
+    <div class="small">No sign-in required · Works on mobile phones</div>
+  </section>
+
+  <section class="card hidden" id="quiz">
+    <div class="progress-row"><span id="counter">QUESTION 1 OF 10</span><span id="score-live">Score: 0</span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="tag">YOUR QUESTION</div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="actions"><button class="primary hidden" id="next">Next question&nbsp; →</button></div>
+  </section>
+
+  <section class="card hidden" id="result">
+    <span class="tag">QUIZ COMPLETED</span>
+    <h2 id="result-title">Well done!</h2>
+    <div class="result-score" id="final-score">0/10</div>
+    <p id="result-message"></p>
+    <div class="result-box">
+      <div style="display:flex;justify-content:space-between"><strong>Correct answers</strong><strong id="correct-count">0</strong></div>
+      <div style="height:1px;background:#34445f;margin:12px 0"></div>
+      <div style="display:flex;justify-content:space-between"><strong>Questions attempted</strong><strong>10</strong></div>
+    </div>
+    <button class="primary" id="restart">Try again&nbsp; ↻</button>
+  </section>
+  <footer>BYTEWISE · Learn the basics. Think beyond.</footer>
+</main>
+<script>
+const questions = [
+ {q:"What does CPU stand for?",a:["Central Processing Unit","Computer Power Utility","Central Program User","Core Processing Upgrade"],c:0,e:"The CPU is the main processor that carries out instructions and calculations."},
+ {q:"Which of these is an input device?",a:["Monitor","Printer","Keyboard","Speaker"],c:2,e:"A keyboard sends data and commands into a computer, so it is an input device."},
+ {q:"Which type of memory is usually temporary and loses its data when power is off?",a:["ROM","RAM","SSD","DVD"],c:1,e:"RAM is volatile memory. It temporarily holds data and programs currently in use."},
+ {q:"Which one is an operating system?",a:["Google Chrome","Microsoft Word","Windows","Adobe Photoshop"],c:2,e:"Windows is system software that manages hardware and allows applications to run."},
+ {q:"What is the main function of a computer's motherboard?",a:["Display pictures","Connect and allow components to communicate","Print documents","Protect against viruses"],c:1,e:"The motherboard is the main circuit board connecting the processor, memory, storage, and other components."},
+ {q:"Which of the following is an example of secondary storage?",a:["RAM","CPU cache","Register","SSD"],c:3,e:"An SSD stores files and programs even when the computer is turned off."},
+ {q:"What does WWW stand for?",a:["World Wide Web","World Web Window","Wide World Wire","Web World Watch"],c:0,e:"WWW stands for World Wide Web, a system of linked pages and resources accessed over the internet."},
+ {q:"Which number system do computers use internally?",a:["Decimal","Binary","Roman","Hexadecimal only"],c:1,e:"Binary uses only 0 and 1, which correspond to the two basic states used in digital circuits."},
+ {q:"Which software is mainly used to browse websites?",a:["Web browser","Compiler","Calculator","File manager"],c:0,e:"A web browser, such as Chrome, Firefox, or Edge, is used to access websites."},
+ {q:"What is the purpose of antivirus software?",a:["Increase screen brightness","Create presentations","Help detect and remove malicious software","Connect a printer"],c:2,e:"Antivirus software helps identify, block, and remove malware that could harm a device or data."}
+];
+let index=0,score=0,answered=false;
+const $=id=>document.getElementById(id);
+function show(id){["intro","quiz","result"].forEach(x=>$(x).classList.toggle("hidden",x!==id));}
+function render(){
+ answered=false;
+ $("counter").textContent=`QUESTION ${index+1} OF ${questions.length}`;
+ $("score-live").textContent=`Score: ${score}`;
+ $("fill").style.width=`${index/questions.length*100}%`;
+ $("question").textContent=questions[index].q;
+ $("options").innerHTML="";
+ $("feedback").className="feedback";
+ $("feedback").textContent="";
+ $("next").classList.add("hidden");
+ questions[index].a.forEach((answer,i)=>{
+   const b=document.createElement("button");
+   b.className="option";b.textContent=String.fromCharCode(65+i)+".  "+answer;
+   b.addEventListener("click",()=>choose(i));
+   $("options").appendChild(b);
+ });
+}
+function choose(choice){
+ if(answered)return;answered=true;
+ const item=questions[index],buttons=[...$("options").children];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("correct");else if(i===choice)b.classList.add("wrong");});
+ if(choice===item.c)score++;
+ $("score-live").textContent=`Score: ${score}`;
+ $("feedback").innerHTML=`<strong>${choice===item.c?"Correct!":"Not quite."}</strong> ${item.e}`;
+ $("feedback").classList.add("show");
+ $("next").textContent=index===questions.length-1?"See my result →":"Next question →";
+ $("next").classList.remove("hidden");
+}
+function finish(){
+ $("fill").style.width="100%";
+ $("final-score").textContent=`${score}/10`;
+ $("correct-count").textContent=score;
+ $("result-title").textContent=score===10?"Perfect score!":score>=7?"Great work!":score>=4?"Good effort!":"Keep learning!";
+ $("result-message").textContent=score===10?"Outstanding — you got every question right.":score>=7?"You have a strong grasp of the fundamentals. Review the questions you missed and keep going.":score>=4?"You’re building your knowledge. Review the explanations and try again.":"Every attempt is a chance to learn. Read the explanations and give it another try.";
+ show("result");
+}
+$("start").addEventListener("click",()=>{index=0;score=0;show("quiz");render();});
+$("next").addEventListener("click",()=>{if(index<questions.length-1){index++;render();}else finish();});
+$("restart").addEventListener("click",()=>{index=0;score=0;show("quiz");render();});
+</script>
+</body>
+</html>
